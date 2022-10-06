@@ -92,17 +92,17 @@ void SendWord(uint row, uint col)
 	gpio_put(SHIFT_STCP, 1);
 }
 
-uint logoSH[] = {
-	0b1111111,
-	0b0000000,
-	0b1100111,
-	0b0001000,
-	0b1110011,
-	0b0000000,
-	0b1111111,
-};
-
 // [Row][Column]
+
+uint logoSH[7][7] = { // SH
+	{ 1, 1, 1, 1, 1, 1, 1 },
+	{ 0, 0, 0, 0, 0, 0, 0 },
+	{ 1, 1, 0, 0, 1, 1, 1 },
+	{ 0, 0, 0, 1, 0, 0, 0 },
+	{ 1, 1, 1, 0, 0, 1, 1 },
+	{ 0, 0, 0, 0, 0, 0, 0 },
+	{ 1, 1, 1, 1, 1, 1, 1 },
+};
 
 uint display[7][7] = { // SH
 	{ 1, 1, 1, 1, 1, 1, 1 },
@@ -141,16 +141,42 @@ void UpdateDisplayThread()
 	}
 }
 
-void Demo1()
+void SetGlobalBrightness(uint8_t v)
 {
 	for(unsigned a = 0; a < 7; a++)
-		displayBrightness[a] = 0;
+		displayBrightness[a] = v;
+}
+
+void ClearScreen()
+{
+	for(unsigned x = 0; x < 7; x++)
+	{
+		for(unsigned y = 0; y < 7; y++)
+			display[x][y] = 0;
+	}
+}
+
+void CopyBuffer(uint buf[7][7])
+{
+	for(unsigned x = 0; x < 7; x++)
+	{
+		for(unsigned y = 0; y < 7; y++)
+		{
+			display[x][y] = buf[x][y];
+		}
+	}
+}
+
+void Demo1()
+{
+	SetGlobalBrightness(0);
+	CopyBuffer(logoSH);
 
 	// Fade-in
 	for(unsigned a = 0; a < 7; )
 	{
 		displayBrightness[a]++;
-		sleep_ms(10);
+		sleep_ms(6);
 
 		if(displayBrightness[a] == 255)
 			a++;
@@ -163,7 +189,7 @@ void Demo1()
 	for(unsigned a = 0; a < 7; )
 	{
 		displayBrightness[a]--;
-		sleep_ms(10);
+		sleep_ms(6);
 
 		if(displayBrightness[a] == 0)
 			a++;
@@ -175,8 +201,8 @@ void Demo1()
 
 void Demo2()
 {
-	for(unsigned a = 0; a < 7; a++)
-		displayBrightness[a] = 0;
+	SetGlobalBrightness(0);
+	CopyBuffer(logoSH);
 
 	for(unsigned loop = 0; loop < 3; loop++)
 	{
@@ -208,6 +234,38 @@ void Demo2()
 	}
 }
 
+void Demo3()
+{
+	SetGlobalBrightness(255);
+	ClearScreen();
+
+	for(unsigned y = 0; y < 7; y++)
+	{
+		for(unsigned x = 0; x < 7; x++)
+		{
+			if(!logoSH[x][y])
+				continue;
+
+			display[x][y] = logoSH[x][y];
+			sleep_ms(100);
+		}
+	}
+
+	sleep_ms(500);
+
+	for(unsigned y = 0; y < 7; y++)
+	{
+		for(unsigned x = 0; x < 7; x++)
+		{
+			if(!logoSH[x][y])
+				continue;
+
+			display[x][y] = 0;
+			sleep_ms(100);
+		}
+	}
+}
+
 int main()
 {
 	stdio_init_all();
@@ -215,12 +273,15 @@ int main()
 	Init();
 	multicore_launch_core1(UpdateDisplayThread);
 
+	ClearScreen();
 	for(;;)
 	{
 		printf("Demo 1\n");
 		Demo1();
 		printf("Demo 2\n");
 		Demo2();
+		printf("Demo 3\n");
+		Demo3();
 	}
 
 	return 0;
