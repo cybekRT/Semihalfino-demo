@@ -173,6 +173,41 @@ void Demo1()
 	}
 }
 
+void Demo2()
+{
+	for(unsigned a = 0; a < 7; a++)
+		displayBrightness[a] = 0;
+
+	for(unsigned loop = 0; loop < 3; loop++)
+	{
+		// Fade-in
+		for(unsigned a = 0; a < 7; )
+		{
+			displayBrightness[a]++;
+			sleep_ms(1);
+
+			if(displayBrightness[a] == 255)
+				a++;
+
+			if(a == 1 || a == 5)
+				a++;
+		}
+
+		// Fade-out
+		for(unsigned a = 0; a < 7; )
+		{
+			displayBrightness[a]--;
+			sleep_ms(1);
+
+			if(displayBrightness[a] == 0)
+				a++;
+
+			if(a == 1 || a == 5)
+				a++;
+		}
+	}
+}
+
 int main()
 {
 	stdio_init_all();
@@ -184,6 +219,8 @@ int main()
 	{
 		printf("Demo 1\n");
 		Demo1();
+		printf("Demo 2\n");
+		Demo2();
 	}
 
 	return 0;
