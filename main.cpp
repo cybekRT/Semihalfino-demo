@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
+
+#include "Font.hpp"
 
 /*
 
@@ -226,6 +229,37 @@ void Demo2()
 	}
 }
 
+void Demo2B()
+{
+	// Fade-in
+	for(unsigned row = 0; row < 7; row++)
+	{
+		for(unsigned brightness = 0; brightness < 255; brightness++)
+		{
+			for(unsigned column = 0; column < 7; column++)
+			{
+				if(logoSH[column][row])
+					display[column][row]++;
+			}
+			sleep_ms(1);
+		}
+	}
+
+	// Fade-out
+	for(unsigned row = 0; row < 7; row++)
+	{
+		for(unsigned brightness = 0; brightness < 255; brightness++)
+		{
+			for(unsigned column = 0; column < 7; column++)
+			{
+				if(logoSH[column][row])
+					display[column][row]--;
+			}
+			sleep_ms(1);
+		}
+	}
+}
+
 void Demo3()
 {
 	ClearScreen();
@@ -369,6 +403,67 @@ void Demo3()
 // 	}
 // }
 
+void Demo7(const char* str, unsigned delay)
+{
+	printf("Font: %x\n", font['A'].width);
+	ClearScreen();
+
+	// display[1][1] = 255;
+	// display[1][2] = 255;
+	// display[4][0] = 255;
+	// for(;;);
+
+	// for(unsigned a = 0; a < 7; a++)
+	// 	display[a][a] = 255;
+
+	auto ShiftColumn = [](){
+		for(unsigned y = 0; y < 7; y++)
+		{
+			for(unsigned x = 0; x < 6; x++)
+			{
+				display[x][y] = display[x+1][y];
+			}
+		}
+	};
+
+	// for(unsigned a = 0; a < 7; a++)
+	// {
+	// 	sleep_ms(1000);
+	// 	ShiftColumn();
+	// }
+
+	// return;
+
+	constexpr unsigned spaceWidth = 1;
+	for(unsigned a = 0; a < strlen(str); a++)
+	{
+		char character = str[a];
+
+		for(unsigned col = 0; col < font[character].width + spaceWidth; col++)
+		{
+			uint8_t byte;
+			if(col >= font[character].width)
+				byte = 0;
+			else
+				byte = font[character].font[col];
+
+			ShiftColumn();
+			for(unsigned row = 0; row < 7; row++)
+			{
+				display[6][row] = (font[character].font[col] & (1 << (6-row))) * 255;
+			}
+
+			sleep_ms(delay);
+		}
+	}
+
+	for(unsigned a = 0; a < 6; a++)
+	{
+		ShiftColumn();
+		sleep_ms(delay);
+	}
+}
+
 int main()
 {
 	stdio_init_all();
@@ -382,6 +477,8 @@ int main()
 	// printf("Demo 4\n");
 	// Demo4();
 
+	Demo7("YOLO", 100);
+
 	ClearScreen();
 	for(;;)
 	{
@@ -389,8 +486,14 @@ int main()
 		Demo1();
 		printf("Demo 2\n");
 		Demo2();
+		printf("Demo 2B\n");
+		Demo2B();
 		printf("Demo 3\n");
 		Demo3();
+
+		for(unsigned a = 0; a < 5; a++)
+			Demo7("SEMIHALF", 500);
+
 		// printf("Demo 6\n");
 		// Demo6();
 	}

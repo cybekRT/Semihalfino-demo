@@ -12,7 +12,7 @@ pico_sdk_init()
 
 # rest of your project
 add_executable(main
-    main.cpp
+    main.cpp font_gen.cpp
 )
 
 # Add pico_stdlib library which aggregates commonly used features
