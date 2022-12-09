@@ -9,25 +9,14 @@
 
 Row:
 1-7 - leds
-
-Vcc - ...
-Q0 - ...
 DS - 19
-OE - ...
 STCP - 20
 SHCP - 18
-MR - ...
-Q7S - ...
 
 Column:
-Vcc - ...
-Q0 - ...
 DS - Q7S
-OE - ...
 STCP - 20
 SHCP - 18
-MR - ...
-Q7S - ...
 
 */
 
@@ -297,124 +286,9 @@ void Demo3()
 	}
 }
 
-// void Demo4()
-// {
-// 	ClearScreen();
-
-// 	unsigned phase = 0;
-// 	uint64_t phaseTimer;
-// 	for(unsigned delay = 250; delay > 0; )
-// 	{
-// 		for(unsigned y = 0; y < 7; y++)
-// 		{
-// 			for(unsigned x = 0; x < 7; x++)
-// 			{
-// 				if(!logoSH[x][y])
-// 					continue;
-
-// 				for(unsigned a = 1; a < 256; a++)
-// 				{
-// 					display[x][y] = logoSH[x][y] * a;
-// 					sleep_us(delay);
-// 				}
-
-// 				display[x][y] = 0;
-// 			}
-// 		}
-
-// 		if(delay > 10 && phase == 0)
-// 			delay /= 2;
-// 		else if(delay > 3 && phase == 0)
-// 		{
-// 			delay--;
-// 		}
-// 		else if(phase == 0)
-// 		{
-// 			phaseTimer = time_us_64();
-// 			phase++;
-// 		}
-// 		else if(time_us_64() > phaseTimer + 2000000ULL)
-// 		{
-// 			break;
-// 		}
-// 	}
-// }
-
-// void Demo5()
-// {
-// 	ClearScreen();
-
-// 	for(unsigned a = 0; a < 7; a++)
-// 	{
-// 		display[a][0] = 0xff;
-// 		display[a][6] = 0xff;
-// 		display[0][a] = 0xff;
-// 		display[6][a] = 0xff;
-
-// 		display[2][3] = 0xff;
-// 		display[3][3] = 0xff;
-// 		display[4][3] = 0xff;
-// 		display[3][2] = 0xff;
-// 		display[3][4] = 0xff;
-// 	}
-
-// 	for(unsigned a = 0; a < 4; a++)
-// 	{
-// 		screenNegate = !screenNegate;
-// 		sleep_ms(500);
-// 	}
-// }
-
-// void Demo6()
-// {
-// 	auto DrawRect = [](int radius, uint8_t brightness) {
-// 		if(radius == 1)
-// 			display[3][3] = brightness;
-// 		else
-// 		{
-// 			radius--;
-// 			for(int a = -radius; a <= radius; a++)
-// 			{
-// 				display[3-radius][3+a] = brightness;
-// 				display[3+radius][3+a] = brightness;
-// 				display[3+a][3-radius] = brightness;
-// 				display[3+a][3+radius] = brightness;
-// 			}
-// 		}
-// 	};
-
-// 	struct Rect
-// 	{
-// 		int radius;
-// 		int brightness;
-// 	}
-
-// 	for(unsigned a = 0; a < 4; a++)
-// 	{
-// 		for(unsigned br = 51; br < 256; br += 51)
-// 		{
-// 			ClearScreen();
-// 			DrawRect(a+1, br);
-
-// 			sleep_ms(200);
-// 		}
-
-// 		sleep_ms(1000);
-// 	}
-// }
-
 void Demo7(const char* str, unsigned delay)
 {
-	printf("Font: %x\n", font['A'].width);
 	ClearScreen();
-
-	// display[1][1] = 255;
-	// display[1][2] = 255;
-	// display[4][0] = 255;
-	// for(;;);
-
-	// for(unsigned a = 0; a < 7; a++)
-	// 	display[a][a] = 255;
 
 	auto ShiftColumn = [](){
 		for(unsigned y = 0; y < 7; y++)
@@ -425,14 +299,6 @@ void Demo7(const char* str, unsigned delay)
 			}
 		}
 	};
-
-	// for(unsigned a = 0; a < 7; a++)
-	// {
-	// 	sleep_ms(1000);
-	// 	ShiftColumn();
-	// }
-
-	// return;
 
 	constexpr unsigned spaceWidth = 1;
 	for(unsigned a = 0; a < strlen(str); a++)
@@ -471,13 +337,7 @@ int main()
 	Init();
 	multicore_launch_core1(UpdateDisplayThread);
 
-	// printf("Demo 5\n"); // Just random image
-	// Demo5();
-
-	// printf("Demo 4\n");
-	// Demo4();
-
-	Demo7("YOLO", 100);
+	Demo7("SEMIHALFINO", 100);
 
 	ClearScreen();
 	for(;;)
@@ -493,9 +353,6 @@ int main()
 
 		for(unsigned a = 0; a < 5; a++)
 			Demo7("SEMIHALF", 500);
-
-		// printf("Demo 6\n");
-		// Demo6();
 	}
 
 	return 0;
