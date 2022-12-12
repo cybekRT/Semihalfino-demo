@@ -41,11 +41,11 @@ void Init()
 
 void SendBit(uint v)
 {
+	gpio_put(SHIFT_DS, !!v);
 	gpio_put(SHIFT_SHCP, 0);
 
-	gpio_put(SHIFT_DS, !!v);
+	asm volatile("nop \n nop \n nop");
 
-	asm volatile("nop");
 	gpio_put(SHIFT_SHCP, 1);
 }
 
@@ -67,11 +67,11 @@ void SendWord(uint row, uint col)
 	lastRow = row;
 	lastCol = col;
 
-	gpio_put(SHIFT_STCP, 0);
-
 	SendByte((~row) << 0);
 	SendByte(col << 0);
 
+	gpio_put(SHIFT_STCP, 0);
+	busy_wait_us(1);
 	gpio_put(SHIFT_STCP, 1);
 }
 
